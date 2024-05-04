@@ -21,6 +21,28 @@ const Book = ({ book }: BookProps) => {
     setShowModal(false);
   }
 
+  const startCheckout = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: book.title,
+          price: book.price,
+        }),
+      });
+
+      const responseData = await response.json();
+      if(response.ok){
+        router.push(responseData.checkout_url);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const handlePurchaseClick = () => {
     setShowModal(true);
   }
@@ -32,8 +54,7 @@ const Book = ({ book }: BookProps) => {
       router.push('/login');
     }else{
       //stripeの決済処理
-      alert('購入しました！');
-      setShowModal(false);
+      startCheckout();
     }
   }
 
